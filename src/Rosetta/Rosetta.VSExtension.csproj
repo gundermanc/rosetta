@@ -80,7 +80,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(NugetPackageRoot)\StreamJsonRpc\2.10.42\lib\netstandard2.0\StreamJsonRpc.dll">
+    <Content Include="$(NugetPackageRoot)\StreamJsonRpc\2.10.44\lib\netstandard2.0\StreamJsonRpc.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>.</VSIXSubPath>

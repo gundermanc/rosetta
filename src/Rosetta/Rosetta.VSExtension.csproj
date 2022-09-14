@@ -62,11 +62,15 @@
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="[17.1.32210.191]" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.3" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.0.64" />
-    <PackageReference Include="Microsoft.VisualStudio.Validation" Version="16.10.35" />
+    <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="17.3.206" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="17.3.206" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="17.3.206" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Core.Implementation" Version="17.3.206" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.3.33" />
+    <PackageReference Include="Microsoft.VisualStudio.Validation" Version="17.0.58" />
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.3.7-preview1" />
     <PackageReference Include="Nerdbank.Streams" Version="2.8.57" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -85,7 +89,7 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>.</VSIXSubPath>
     </Content>
-    <Content Include="$(NugetPackageRoot)\Microsoft.VisualStudio.Validation\16.10.35\lib\netstandard2.0\Microsoft.VisualStudio.Validation.dll">
+    <Content Include="$(NugetPackageRoot)\Microsoft.VisualStudio.Validation\17.0.58\lib\netstandard2.0\Microsoft.VisualStudio.Validation.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>.</VSIXSubPath>
@@ -95,7 +99,29 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>.</VSIXSubPath>
     </Content>
-    <Content Include="$(NugetPackageRoot)\Microsoft.VisualStudio.Threading\17.0.64\lib\netstandard2.0\Microsoft.VisualStudio.Threading.dll">
+
+    <Content Include="$(NugetPackageRoot)\Microsoft.VisualStudio.CoreUtility\17.3.206\lib\netstandard2.0\Microsoft.VisualStudio.CoreUtility.dll">
+     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+     <IncludeInVSIX>true</IncludeInVSIX>
+     <VSIXSubPath>.</VSIXSubPath>
+    </Content>
+    <Content Include="$(NugetPackageRoot)\Microsoft.VisualStudio.Text.Data\17.3.206\lib\netstandard2.0\Microsoft.VisualStudio.Text.Data.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>.</VSIXSubPath>
+    </Content>
+    <Content Include="$(NugetPackageRoot)\Microsoft.VisualStudio.Text.Logic\17.3.206\lib\netstandard2.0\Microsoft.VisualStudio.Text.Logic.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>.</VSIXSubPath>
+    </Content>
+    <Content Include="$(NugetPackageRoot)\Microsoft.VisualStudio.Text.Core.Implementation\17.3.206\lib\netstandard2.0\Microsoft.VisualStudio.Text.Core.Implementation.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>.</VSIXSubPath>
+    </Content>
+
+    <Content Include="$(NugetPackageRoot)\Microsoft.VisualStudio.Threading\17.3.33\lib\netstandard2.0\Microsoft.VisualStudio.Threading.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>.</VSIXSubPath>
@@ -110,7 +136,7 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>.</VSIXSubPath>
     </Content>
-    <Content Include="$(NugetPackageRoot)\System.Collections.Immutable\5.0.0\lib\netstandard2.0\System.Collections.Immutable.dll">
+    <Content Include="$(NugetPackageRoot)\System.Collections.Immutable\6.0.0\lib\netstandard2.0\System.Collections.Immutable.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>.</VSIXSubPath>

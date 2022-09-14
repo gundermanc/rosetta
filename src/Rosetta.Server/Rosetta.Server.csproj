@@ -13,7 +13,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Extensions" Version="17.1.8" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Core.Implementation" Version="17.3.206" />
     <PackageReference Include="StreamJsonRpc" Version="2.10.44" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Looks like the PackageReference doesn't reference the DLL. -->
+    <Reference Include="$(NugetPackageRoot)\Microsoft.VisualStudio.Text.Core.Implementation\17.3.206\lib\netstandard2.0\Microsoft.VisualStudio.Text.Core.Implementation.dll" />
   </ItemGroup>
 
 </Project>

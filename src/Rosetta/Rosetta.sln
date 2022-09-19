@@ -5,9 +5,9 @@ VisualStudioVersion = 17.3.32408.204
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rosetta.VSExtension", "Rosetta.VSExtension.csproj", "{CBC66492-B2DA-4FA2-A006-E21C677DEB70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rosetta.Analysis", "..\Rosetta.Analysis\Rosetta.Analysis.csproj", "{80584E29-D650-476A-A949-FCD80E6D8345}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rosetta.Analysis", "..\Rosetta.Analysis\Rosetta.Analysis.csproj", "{80584E29-D650-476A-A949-FCD80E6D8345}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rosetta.Server", "..\Rosetta.Server\Rosetta.Server.csproj", "{31F23308-2621-45FB-A538-F9C966DA9FF8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rosetta.Server", "..\Rosetta.Server\Rosetta.Server.csproj", "{31F23308-2621-45FB-A538-F9C966DA9FF8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{123CC8A1-B86A-4398-83E3-3E4172F844B3}"
 	ProjectSection(SolutionItems) = preProject
@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\..\LICENSE = ..\..\LICENSE
 		..\..\README.md = ..\..\README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rosetta.Analysis.Tests", "..\Rosetta.Analysis.Tests\Rosetta.Analysis.Tests.csproj", "{99CCC338-8FD4-43EE-8798-F0BAE610EFDB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +50,14 @@ Global
 		{31F23308-2621-45FB-A538-F9C966DA9FF8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{31F23308-2621-45FB-A538-F9C966DA9FF8}.Release|x86.ActiveCfg = Release|Any CPU
 		{31F23308-2621-45FB-A538-F9C966DA9FF8}.Release|x86.Build.0 = Release|Any CPU
+		{99CCC338-8FD4-43EE-8798-F0BAE610EFDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99CCC338-8FD4-43EE-8798-F0BAE610EFDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99CCC338-8FD4-43EE-8798-F0BAE610EFDB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{99CCC338-8FD4-43EE-8798-F0BAE610EFDB}.Debug|x86.Build.0 = Debug|Any CPU
+		{99CCC338-8FD4-43EE-8798-F0BAE610EFDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99CCC338-8FD4-43EE-8798-F0BAE610EFDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99CCC338-8FD4-43EE-8798-F0BAE610EFDB}.Release|x86.ActiveCfg = Release|Any CPU
+		{99CCC338-8FD4-43EE-8798-F0BAE610EFDB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

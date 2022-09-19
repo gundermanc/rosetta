@@ -99,11 +99,10 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>.</VSIXSubPath>
     </Content>
-
     <Content Include="$(NugetPackageRoot)\Microsoft.VisualStudio.CoreUtility\17.3.206\lib\netstandard2.0\Microsoft.VisualStudio.CoreUtility.dll">
-     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-     <IncludeInVSIX>true</IncludeInVSIX>
-     <VSIXSubPath>.</VSIXSubPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>.</VSIXSubPath>
     </Content>
     <Content Include="$(NugetPackageRoot)\Microsoft.VisualStudio.Text.Data\17.3.206\lib\netstandard2.0\Microsoft.VisualStudio.Text.Data.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -120,7 +119,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>.</VSIXSubPath>
     </Content>
-
     <Content Include="$(NugetPackageRoot)\Microsoft.VisualStudio.Threading\17.3.33\lib\netstandard2.0\Microsoft.VisualStudio.Threading.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

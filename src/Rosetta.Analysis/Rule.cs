@@ -23,6 +23,17 @@
         public string MatchText { get; }
     }
 
+    public sealed class ReferenceRule : Rule
+    {
+        public ReferenceRule(string ruleName)
+            : base(RuleType.ReferenceRule)
+        {
+            this.RuleName = ruleName;
+        }
+
+        public string RuleName { get; }
+    }
+
     public class ParentRule : Rule
     {
         public ParentRule(RuleType type)

@@ -4,6 +4,7 @@
     {
         AndRule,
         OrRule,
-        Match
+        Match,
+        ReferenceRule
     }
 }

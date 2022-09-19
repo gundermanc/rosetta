@@ -46,5 +46,15 @@
             Assert.Equal("expression", ((MatchRule)grammar.Root.Children[1]).MatchText);
             Assert.Equal("example", ((MatchRule)grammar.Root.Children[2]).MatchText);
         }
+
+        [Fact]
+        public async Task Grammar_ReferencedRule_ParsedCorrectlyAsync()
+        {
+            var grammar = await GrammarParser.ParseGrammarAsync(@"Grammars\ReferenceRule.rosetta.md");
+
+            Assert.Equal(2, grammar.Root.Children.Count);
+            Assert.IsType<AndRule>(grammar.Root);
+            Assert.Equal("REFERENCED_EXPRESSION", ((ReferenceRule)grammar.Root.Children[0]).RuleName);
+        }
     }
 }

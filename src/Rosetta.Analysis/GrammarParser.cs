@@ -16,6 +16,7 @@
             string? line = null;
 
             ParentRule? rootRule = null;
+            Dictionary<string, Rule> ruleDictionary = new();
 
             while ((line = await reader.ReadLineAsync()) != null)
             {
@@ -33,7 +34,7 @@
                 else
                 {
                     // We're not in documentation.
-                    var rule = ParseRule(line);
+                    var rule = ParseRule(line, ruleDictionary);
 
                     if (rootRule is null)
                     {
@@ -46,10 +47,10 @@
                 }
             }
 
-            return new Grammar(rootRule ?? new AndRule());
+            return new Grammar(rootRule ?? new AndRule(), ruleDictionary);
         }
 
-        private static ParentRule ParseRule(string line)
+        private static ParentRule ParseRule(string line, Dictionary<string, Rule> ruleDictionary)
         {
             // TODO: this could be improved to use on the fly tokenization off a stream
             // instead of string allocations.
@@ -57,15 +58,15 @@
 
             var children = new List<Rule>();
             bool isOrRule = false;
-            bool isAndRule = false;
-            bool previousWasOr = false;
 
             // Read in the production name.
             int i = 0;
-            if (!tokens[i].All(c => char.IsLetterOrDigit(c) || c == '_'))
+            if (tokens[i].Any(c => !char.IsLetterOrDigit(c) && c != '_'))
             {
                 throw new InvalidDataException("First token in grammar line must be production name");
             }
+
+            var productionName = tokens[i];
 
             IncrementOrThrow(tokens, ref i);
 
@@ -84,32 +85,40 @@
                 if (TryParseStringChild(tokens, ref i, out var stringRule))
                 {
                     children.Add(stringRule!);
-                    previousWasOr = false;
                 }
-                else if (tokens[i++] == "|")
+                else if (tokens[i] == "|")
                 {
                     // or rule.
                     isOrRule = true;
-                    previousWasOr = true;
+                    i++;
                 }
+                else if (TryParseReferenceChild(tokens, ref i, out var referenceRule))
+                {
+                    children.Add(referenceRule!);
+                }
+
 
                 // TODO: today we assume AND or OR rules. We should probably throw
                 // if the user tries to mix them.
             }
 
-            // Each line can only contain exclusively AND or exclusively OR.
-            if (isAndRule && isOrRule ||
-                !isAndRule && !isOrRule)
-            {
-                throw new InvalidDataException("Cannot mix AND and OR productions in a single line");
-            }
-
             ParentRule rule = isOrRule ? new OrRule() : new AndRule();
+            RegisterRule(ruleDictionary, productionName, rule);
 
             // TODO: without list copy.
             rule.Children.AddRange(children);
 
             return rule;
+        }
+
+        private static void RegisterRule(Dictionary<string, Rule> ruleDictionary, string ruleName, Rule rule)
+        {
+            if (ruleDictionary.ContainsKey(ruleName))
+            {
+                throw new InvalidDataException("Duplicate production definition");
+            }
+
+            ruleDictionary.Add(ruleName, rule);
         }
 
         private static bool TryParseStringChild(
@@ -136,6 +145,23 @@
             IncrementOrThrow(tokens, ref i);
 
             rule = new MatchRule(tokens[i - 2]);
+            return true;
+        }
+
+        private static bool TryParseReferenceChild(
+            IReadOnlyList<string> tokens,
+            ref int i,
+            out Rule? rule)
+        {
+            if (tokens[i].Any(c => !char.IsLetterOrDigit(c) && c != '_'))
+            {
+                throw new InvalidDataException("Expected reference name");
+            }
+
+            rule = new ReferenceRule(tokens[i]);
+
+            IncrementOrThrow(tokens, ref i);
+
             return true;
         }
 

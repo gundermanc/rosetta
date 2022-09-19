@@ -31,6 +31,7 @@
                         int stringStart = ++i;
 
                         // Consume up to the end of the string.
+                        // TODO: support escape sequences.
                         for (;
                             i < grammar.Length &&
                             grammar[i] != '\'';

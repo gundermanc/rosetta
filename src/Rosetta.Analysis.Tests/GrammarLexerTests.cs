@@ -1,6 +1,5 @@
 namespace Rosetta.Analysis.Tests
 {
-    using System.IO;
     using System.Linq;
     using Xunit;
 

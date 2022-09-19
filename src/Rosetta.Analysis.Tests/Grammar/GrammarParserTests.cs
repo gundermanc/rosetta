@@ -12,7 +12,7 @@
         {
             var grammar = await GrammarParser.ParseGrammarAsync(@"Grammars\Empty.rosetta.md");
 
-            Assert.Empty(grammar.Root.Children);
+            Assert.Empty(((ParentRule)grammar.Root).Children);
         }
 
         [Fact]
@@ -20,8 +20,7 @@
         {
             var grammar = await GrammarParser.ParseGrammarAsync(@"Grammars\StringMatchRule.rosetta.md");
 
-            Assert.Equal(1, grammar.Root.Children.Count);
-            Assert.Equal("if", ((MatchRule)grammar.Root.Children[0]).MatchText);
+            Assert.Equal("if", ((MatchRule)grammar.Root).MatchText);
         }
 
         [Fact]
@@ -29,11 +28,11 @@
         {
             var grammar = await GrammarParser.ParseGrammarAsync(@"Grammars\AndRule.rosetta.md");
 
-            Assert.Equal(3, grammar.Root.Children.Count);
-            Assert.IsType(typeof(AndRule), grammar.Root);
-            Assert.Equal("and", ((MatchRule)grammar.Root.Children[0]).MatchText);
-            Assert.Equal("expression", ((MatchRule)grammar.Root.Children[1]).MatchText);
-            Assert.Equal("example", ((MatchRule)grammar.Root.Children[2]).MatchText);
+            Assert.Equal(3, ((ParentRule)grammar.Root).Children.Count);
+            Assert.IsType<AndRule>(grammar.Root);
+            Assert.Equal("and", ((MatchRule)((ParentRule)grammar.Root).Children[0]).MatchText);
+            Assert.Equal("expression", ((MatchRule)((ParentRule)grammar.Root).Children[1]).MatchText);
+            Assert.Equal("example", ((MatchRule)((ParentRule)grammar.Root).Children[2]).MatchText);
         }
 
         [Fact]
@@ -41,11 +40,11 @@
         {
             var grammar = await GrammarParser.ParseGrammarAsync(@"Grammars\OrRule.rosetta.md");
 
-            Assert.Equal(3, grammar.Root.Children.Count);
+            Assert.Equal(3, ((ParentRule)grammar.Root).Children.Count);
             Assert.IsType<OrRule>(grammar.Root);
-            Assert.Equal("or", ((MatchRule)grammar.Root.Children[0]).MatchText);
-            Assert.Equal("expression", ((MatchRule)grammar.Root.Children[1]).MatchText);
-            Assert.Equal("example", ((MatchRule)grammar.Root.Children[2]).MatchText);
+            Assert.Equal("or", ((MatchRule)((ParentRule)grammar.Root).Children[0]).MatchText);
+            Assert.Equal("expression", ((MatchRule)((ParentRule)grammar.Root).Children[1]).MatchText);
+            Assert.Equal("example", ((MatchRule)((ParentRule)grammar.Root).Children[2]).MatchText);
         }
 
         [Fact]
@@ -53,9 +52,13 @@
         {
             var grammar = await GrammarParser.ParseGrammarAsync(@"Grammars\ReferenceRule.rosetta.md");
 
-            Assert.Equal(2, grammar.Root.Children.Count);
-            Assert.IsType<AndRule>(grammar.Root);
-            Assert.Equal("REFERENCED_EXPRESSION", ((ReferenceRule)grammar.Root.Children[0]).RuleName);
+            Assert.Equal("REFERENCED_EXPRESSION", ((ReferenceRule)grammar.Root).RuleName);
+
+            Assert.Equal(2, grammar.Rules.Count);
+            Assert.Contains("ROOT", grammar.Rules.Keys);
+            Assert.Contains("REFERENCED_EXPRESSION", grammar.Rules.Keys);
+
+            Assert.Equal("I understood that reference", ((MatchRule)grammar.Rules["REFERENCED_EXPRESSION"]).MatchText);
         }
     }
 }

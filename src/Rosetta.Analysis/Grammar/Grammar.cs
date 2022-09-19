@@ -5,7 +5,7 @@
 
     public sealed class Grammar
     {
-        internal Grammar(ParentRule root, IReadOnlyDictionary<string, Rule> rules)
+        internal Grammar(Rule root, IReadOnlyDictionary<string, Rule> rules)
         {
             Root = root
                 ?? throw new ArgumentNullException(nameof(root));
@@ -14,7 +14,7 @@
                 ?? throw new ArgumentNullException(nameof(rules));
         }
 
-        public ParentRule Root { get; }
+        public Rule Root { get; }
 
         public IReadOnlyDictionary<string, Rule> Rules { get; }
     }

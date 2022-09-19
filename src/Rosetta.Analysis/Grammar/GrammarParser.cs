@@ -15,7 +15,7 @@
             bool inDocumentation = true;
             string? line = null;
 
-            ParentRule? rootRule = null;
+            Rule? rootRule = null;
             Dictionary<string, Rule> ruleDictionary = new();
 
             while ((line = await reader.ReadLineAsync()) != null)
@@ -36,21 +36,14 @@
                     // We're not in documentation.
                     var rule = ParseRule(line, ruleDictionary);
 
-                    if (rootRule is null)
-                    {
-                        rootRule = rule;
-                    }
-                    else
-                    {
-                        rootRule.Children.Add(rule);
-                    }
+                    rootRule ??= rule;
                 }
             }
 
             return new Grammar(rootRule ?? new AndRule(), ruleDictionary);
         }
 
-        private static ParentRule ParseRule(string line, Dictionary<string, Rule> ruleDictionary)
+        private static Rule ParseRule(string line, Dictionary<string, Rule> ruleDictionary)
         {
             // TODO: this could be improved to use on the fly tokenization off a stream
             // instead of string allocations.
@@ -102,13 +95,21 @@
                 // if the user tries to mix them.
             }
 
-            ParentRule rule = isOrRule ? new OrRule() : new AndRule();
-            RegisterRule(ruleDictionary, productionName, rule);
+            if (children.Count > 1)
+            {
+                ParentRule rule = isOrRule ? new OrRule() : new AndRule();
+                RegisterRule(ruleDictionary, productionName, rule);
 
-            // TODO: without list copy.
-            rule.Children.AddRange(children);
+                // TODO: without list copy.
+                rule.Children.AddRange(children);
 
-            return rule;
+                return rule;
+            }
+            else
+            {
+                RegisterRule(ruleDictionary, productionName, children[0]);
+                return children[0];
+            }
         }
 
         private static void RegisterRule(Dictionary<string, Rule> ruleDictionary, string ruleName, Rule rule)

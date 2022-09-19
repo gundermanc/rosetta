@@ -1,4 +1,4 @@
-﻿namespace Rosetta.Analysis
+﻿namespace Rosetta.Analysis.Grammar
 {
     using System.Collections.Generic;
 
@@ -53,7 +53,7 @@
                         for (;
                             i < grammar.Length &&
                             (char.IsLetterOrDigit(grammar[i]) || grammar[i] == '_');
-                            i++);
+                            i++) ;
 
                         yield return grammar.Substring(tokenNameStart, i - tokenNameStart);
                         break;

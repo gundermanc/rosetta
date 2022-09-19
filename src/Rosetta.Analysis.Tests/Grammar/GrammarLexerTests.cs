@@ -1,6 +1,7 @@
-namespace Rosetta.Analysis.Tests
+namespace Rosetta.Analysis.Tests.Grammar
 {
     using System.Linq;
+    using Rosetta.Analysis.Grammar;
     using Xunit;
 
     public class GrammarLexerTests

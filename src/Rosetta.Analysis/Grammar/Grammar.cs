@@ -1,4 +1,4 @@
-﻿namespace Rosetta.Analysis
+﻿namespace Rosetta.Analysis.Grammar
 {
     using System;
     using System.Collections.Generic;
@@ -7,10 +7,10 @@
     {
         internal Grammar(ParentRule root, IReadOnlyDictionary<string, Rule> rules)
         {
-            this.Root = root
+            Root = root
                 ?? throw new ArgumentNullException(nameof(root));
 
-            this.Rules = rules
+            Rules = rules
                 ?? throw new ArgumentNullException(nameof(rules));
         }
 

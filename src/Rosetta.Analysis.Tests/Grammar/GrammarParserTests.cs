@@ -1,7 +1,8 @@
-﻿namespace Rosetta.Analysis.Tests
+﻿namespace Rosetta.Analysis.Tests.Grammar
 {
     using System.IO;
     using System.Threading.Tasks;
+    using Rosetta.Analysis.Grammar;
     using Xunit;
 
     public sealed class GrammarParserTests

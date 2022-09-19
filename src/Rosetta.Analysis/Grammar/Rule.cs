@@ -1,4 +1,4 @@
-﻿namespace Rosetta.Analysis
+﻿namespace Rosetta.Analysis.Grammar
 {
     using System.Collections.Generic;
 
@@ -6,7 +6,7 @@
     {
         public Rule(RuleType type)
         {
-            this.RuleType = type;
+            RuleType = type;
         }
 
         public RuleType RuleType { get; }
@@ -17,7 +17,7 @@
         public MatchRule(string matchText)
             : base(RuleType.Match)
         {
-            this.MatchText = matchText;
+            MatchText = matchText;
         }
 
         public string MatchText { get; }
@@ -28,7 +28,7 @@
         public ReferenceRule(string ruleName)
             : base(RuleType.ReferenceRule)
         {
-            this.RuleName = ruleName;
+            RuleName = ruleName;
         }
 
         public string RuleName { get; }

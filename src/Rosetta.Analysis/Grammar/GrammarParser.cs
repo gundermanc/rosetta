@@ -1,4 +1,4 @@
-﻿namespace Rosetta.Analysis
+﻿namespace Rosetta.Analysis.Grammar
 {
     using System.Collections.Generic;
     using System.IO;

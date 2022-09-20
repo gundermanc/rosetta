@@ -72,7 +72,7 @@
             }
 
             return new SyntaxNode(
-                new SnapshotSegment(textSnapshot, i, i - startPosition),
+                new SnapshotSegment(textSnapshot, startPosition, i - startPosition),
                 parentName ?? "ANONYMOUS_AND_RULE",
                 children);
         }
@@ -88,6 +88,8 @@
                 throw new InvalidOperationException("Inconsistent rule type");
             }
 
+            int startPosition = 0;
+
             // Loop until we find a node that matches.
             foreach (var childRule in orRule.Children)
             {
@@ -97,6 +99,9 @@
                 {
                     return node;
                 }
+
+                // Revert any consumed text.
+                i = startPosition;
             }
 
             return null;
@@ -118,21 +123,39 @@
                 return null;
             }
 
-            var startPosition = i;
+            int localI = i;
+
+            // HACK: we need a way to turn whitespace significance on/off.
+            //       the ideal way is via a dedicated command that takes a
+            //       regex of chars to ignore.
+            //       For now I'll just use _ prefix.
+            if (parentName?.StartsWith("_") is false)
+            {
+                for (; localI < textSnapshot.Length - 1 && char.IsWhiteSpace(textSnapshot[localI]); localI++);
+            }
+
+            var startPosition = localI;
 
             for (int j = 0;
-                i < textSnapshot.Length && j < matchRule.MatchText.Length;
-                i++, j++)
+                localI < textSnapshot.Length && j < matchRule.MatchText.Length;
+                localI++, j++)
             {
-                if (textSnapshot[i] != matchRule.MatchText[j])
+                if (textSnapshot[localI] != matchRule.MatchText[j])
                 {
-                    i = startPosition;
                     return null;
                 }
             }
 
+            var length = localI - startPosition;
+            if (matchRule.MatchText.Length != length)
+            {
+                return null;
+            }
+
+            i = localI;
+
             return new SyntaxNode(
-                new SnapshotSegment(textSnapshot, startPosition, i - startPosition),
+                new SnapshotSegment(textSnapshot, startPosition, length),
                 parentName ?? "ANONYMOUS_MATCH_RULE");
         }
     }

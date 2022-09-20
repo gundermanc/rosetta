@@ -61,5 +61,21 @@
             Assert.Equal("2", syntaxTree.Root.Children[2].Text.GetText());
             Assert.Equal("NUMBER", syntaxTree.Root.Children[2].RuleName);
         }
+
+        [Fact]
+        public async Task GrammarExecution_SelfReference_ParsesCorrectlyAsync()
+        {
+            var grammar = await GrammarParser.ParseGrammarAsync(@"Grammars\RecursiveReferenceRule.rosetta.md");
+            var syntaxTree = GrammarExecution.Parse(grammar, new StringSnapshot("hello hello"));
+
+            Assert.Equal("SELF_REFERENCING_RULE_RECURSIVE", syntaxTree.Root.RuleName);
+            Assert.Equal(2, syntaxTree.Root.Children.Count);
+
+            Assert.Equal("hello", syntaxTree.Root.Children[0].Text.GetText());
+            Assert.Equal("SELF_REFERENCING_RULE_RECURSIVE", syntaxTree.Root.Children[0].RuleName);
+
+            Assert.Equal("hello", syntaxTree.Root.Children[1].Text.GetText());
+            Assert.Equal("SELF_REFERENCING_RULE", syntaxTree.Root.Children[1].RuleName);
+        }
     }
 }

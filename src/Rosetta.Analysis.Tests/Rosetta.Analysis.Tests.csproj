@@ -25,6 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Grammars\RecursiveReferenceRule.rosetta.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Grammars\Arithmetic.rosetta.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

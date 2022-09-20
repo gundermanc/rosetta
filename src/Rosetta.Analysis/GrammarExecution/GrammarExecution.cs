@@ -91,18 +91,30 @@
 
             int startPosition = i;
 
-            // Loop until we find a node that matches.
+            SyntaxNode? candidate = null;
+            int candidateI = i;
+
+            // We only really want one matching node but we have to be
+            // greedy to ensure that right hand recursion works,
+            // so try nodes one by one until we find the longest match.
             foreach (var childRule in orRule.Children)
             {
-                SyntaxNode? node = ExecuteAnyRule(textSnapshot, childRule, parentName, ref i);
+                int iterationI = i;
 
-                if (node is not null)
+                SyntaxNode? node = ExecuteAnyRule(textSnapshot, childRule, parentName, ref iterationI);
+
+                if (node is not null &&
+                    iterationI > candidateI)
                 {
-                    return node;
+                    candidate = node;
+                    candidateI = iterationI;
                 }
+            }
 
-                // Revert any consumed text.
-                i = startPosition;
+            if (candidate is not null)
+            {
+                i = candidateI;
+                return candidate;
             }
 
             return null;

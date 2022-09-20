@@ -1,18 +1,17 @@
 ﻿namespace Rosetta.Server
 {
-    using System.IO;
-    using System.Threading.Tasks;
     using System;
-    using StreamJsonRpc;
-    using Microsoft.VisualStudio.LanguageServer.Protocol;
     using System.Collections.Generic;
-    using Microsoft.VisualStudio.Text;
-    using System.Linq;
     using System.Diagnostics;
-    using Rosetta.Analysis.Grammar;
-    using Rosetta.Analysis.Text;
-    using Rosetta.Analysis.GrammarExecution;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.VisualStudio.LanguageServer.Protocol;
+    using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Utilities;
+    using Rosetta.Analysis.GrammarExecution;
+    using Rosetta.Analysis.Text;
+    using StreamJsonRpc;
 
     internal sealed class LanguageServer
     {
@@ -65,7 +64,8 @@
                             TokenTypes = SemanticTokenTypes.AllTypes.ToArray(),
                             TokenModifiers = SemanticTokenModifiers.AllModifiers.ToArray()
                         },
-                    }
+                    },
+                    WorkspaceSymbolProvider = true
                 },
             };
         }
@@ -136,27 +136,21 @@
         [JsonRpcMethod(Methods.TextDocumentSemanticTokensRangeName, UseSingleObjectParameterDeserialization = true)]
         public async Task<SemanticTokens> SemanticTokensRangeAsync(SemanticTokensRangeParams arg)
         {
-            var grammar = await GrammarParser.ParseGrammarAsync(@"D:\Repos\rosetta\samples\CSharp.rosetta.md");
-
-            TextSnapshot? snapshot;
-
-            lock (this.openDocuments)
-            {
-                if (!this.openDocuments.TryGetValue(arg.TextDocument.Uri, out var buffer))
-                {
-                    return new SemanticTokens() { Data = Array.Empty<int>() };
-                }
-
-                snapshot = new TextSnapshot(buffer.CurrentSnapshot);
-            }
-
-            var parse = GrammarExecution.Parse(grammar, snapshot);
+            (SyntaxTree? parse, TextSnapshot? snapshot) = await this.GetActiveDocumentParseAsync(arg.TextDocument.Uri);
 
             var builder = ArrayBuilder<int>.GetInstance();
 
-            var previousText = new SnapshotSegment(snapshot, 0, 0);
+            if (parse is not null &&
+                snapshot is not null)
+            {
+                var previousText = new SnapshotSegment(parse.Root.Text.Snapshot, 0, 0);
 
-            this.VisitSyntaxNode(parse.Root, builder, snapshot, ref previousText);
+                this.VisitSyntaxHighlightNode(
+                    parse.Root,
+                    builder,
+                    (TextSnapshot)parse.Root.Text.Snapshot,
+                    ref previousText);
+            }
 
             return new SemanticTokens()
             {
@@ -164,7 +158,85 @@
             };
         }
 
-        private void VisitSyntaxNode(
+        [JsonRpcMethod(Methods.WorkspaceSymbolName, UseSingleObjectParameterDeserialization = true)]
+        public async Task<SymbolInformation[]> WorkspaceSymbolAsync(WorkspaceSymbolParams arg)
+        {
+            var responseBuilder = ArrayBuilder<SymbolInformation>.GetInstance();
+
+            List<Uri> openDocuments;
+            lock (this.openDocuments)
+            {
+                openDocuments = this.openDocuments.Keys.ToList();
+            }
+
+            // Enumerate open documents and search for matching definitions.
+            // TODO: parse and search all supported files in the workspace.
+            foreach (var openDocument in openDocuments)
+            {
+                (SyntaxTree? parse, TextSnapshot? snapshot) = await this.GetActiveDocumentParseAsync(openDocument);
+
+                var previousText = new SnapshotSegment(parse.Root.Text.Snapshot, 0, 0);
+
+                if (parse is not null &&
+                    snapshot is not null)
+                {
+                    VisitSymbolSearchNode(
+                        openDocument,
+                        arg.Query,
+                        parse.Root,
+                        responseBuilder,
+                        snapshot,
+                        ref previousText);
+                }
+            }
+
+            return responseBuilder.ToArrayAndFree();
+        }
+
+        private void VisitSymbolSearchNode(
+            Uri uri,
+            string query,
+            SyntaxNode syntaxNode,
+            ArrayBuilder<SymbolInformation> responseBuilder,
+            TextSnapshot snapshot,
+            ref SnapshotSegment previousText)
+        {
+            // Find all type definition names that match the search query and return them.
+            if (syntaxNode.RuleName.Contains("DEFINITION") &&
+                syntaxNode.Text.GetText().StartsWith(query))
+            {
+                var startLine = snapshot.Snapshot.GetLineFromPosition(syntaxNode.Text.Start);
+                var endLine = snapshot.Snapshot.GetLineFromPosition(syntaxNode.Text.End);
+
+                responseBuilder.Add(new SymbolInformation()
+                {
+                    Name = syntaxNode.Text.GetText(),
+                    Kind = SymbolKind.Function,
+                    Location = new Location()
+                    {
+                        Range = new Range()
+                        {
+                            Start = new Position(startLine.LineNumber, syntaxNode.Text.Start - startLine.Start),
+                            End = new Position(endLine.LineNumber, syntaxNode.Text.End - endLine.Start),
+                        },
+                        Uri = uri,
+                    },
+                });
+            }
+
+            foreach (var node in syntaxNode.Children)
+            {
+                VisitSymbolSearchNode(
+                    uri,
+                    query,
+                    node,
+                    responseBuilder,
+                    snapshot,
+                    ref previousText);
+            }
+        }
+
+        private void VisitSyntaxHighlightNode(
             SyntaxNode syntaxNode,
             ArrayBuilder<int> responseBuilder,
             TextSnapshot snapshot,
@@ -200,7 +272,7 @@
 
             foreach (var node in syntaxNode.Children)
             {
-                VisitSyntaxNode(
+                VisitSyntaxHighlightNode(
                     node,
                     responseBuilder,
                     snapshot,
@@ -231,6 +303,26 @@
             {
                 return -1;
             }
+        }
+
+        private async Task<(SyntaxTree?, TextSnapshot?)> GetActiveDocumentParseAsync(Uri uri)
+        {
+            ITextSnapshot? snapshot;
+
+            lock (this.openDocuments)
+            {
+                if (!this.openDocuments.TryGetValue(uri, out var buffer))
+                {
+                    return (null, null);
+                }
+
+                snapshot = buffer.CurrentSnapshot;
+            }
+
+            var parseManager = await ParseManager.GetOrCreateAsync(snapshot.TextBuffer);
+            var parse = parseManager.EnsureParsed(snapshot);
+
+            return (parse, (TextSnapshot?)parse?.Root.Text.Snapshot);
         }
 
         private ITextBufferFactoryService BufferFactoryService

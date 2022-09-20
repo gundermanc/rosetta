@@ -5,6 +5,8 @@
     /// </summary>
     public abstract class SnapshotBase
     {
+        private string? stringifiedSnapshot;
+
         protected SnapshotBase(int length)
         {
             this.Length = length;
@@ -23,5 +25,10 @@
         /// Length of the text segment.
         /// </summary>
         public int Length { get; }
+
+        // HACK
+        public string ToStringCached() => this.stringifiedSnapshot ??= this.ToString();
+
+        public override string ToString() => this.Extent.GetText();
     }
 }

@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.IO;
+    using System.Text.RegularExpressions;
 
     public abstract class Rule
     {
@@ -15,6 +16,8 @@
 
     public sealed class MatchRule : Rule
     {
+        private Regex? regex;
+
         public MatchRule(string matchText)
             : base(RuleType.Match)
         {
@@ -22,6 +25,24 @@
         }
 
         public string MatchText { get; }
+
+        public Regex Regex
+        {
+            get
+            {
+                // Only matches marked with ^ are treated as regex.
+                if (this.MatchText.Length < 2 ||
+                    this.MatchText[0] != '^')
+                {
+                    return null;
+                }
+
+                // Cache regex once it's created.
+                return this.regex ??= new Regex(
+                    this.MatchText.Substring(1, this.MatchText.Length - 1),
+                    RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Multiline);
+            }
+        }
     }
 
     public sealed class ReferenceRule : Rule

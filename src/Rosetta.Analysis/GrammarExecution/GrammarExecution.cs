@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Text.RegularExpressions;
     using Rosetta.Analysis.Grammar;
     using Rosetta.Analysis.Text;
 
@@ -118,6 +119,11 @@
                 throw new InvalidOperationException("Inconsistent rule type");
             }
 
+            if (matchRule.Regex is not null)
+            {
+                return ExecuteRegexMatchRule(textSnapshot, matchRule, parentName, ref i);
+            }
+
             if (textSnapshot.Length < matchRule.MatchText.Length)
             {
                 return null;
@@ -151,6 +157,53 @@
             {
                 return null;
             }
+
+            i = localI;
+
+            return new SyntaxNode(
+                new SnapshotSegment(textSnapshot, startPosition, length),
+                parentName ?? "ANONYMOUS_MATCH_RULE");
+        }
+
+        private static SyntaxNode? ExecuteRegexMatchRule(
+            SnapshotBase textSnapshot,
+            MatchRule matchRule,
+            string? parentName,
+            ref int i)
+        {
+            int localI = i;
+
+            // HACK: we need a way to turn whitespace significance on/off.
+            //       the ideal way is via a dedicated command that takes a
+            //       regex of chars to ignore.
+            //       For now I'll just use _ prefix.
+            if (parentName?.StartsWith("_") is false)
+            {
+                for (; localI < textSnapshot.Length - 1 && char.IsWhiteSpace(textSnapshot[localI]); localI++) ;
+            }
+
+            var startPosition = localI;
+
+            // TODO: copying the entire text buffer to a string is EXTRAORDINARILY expensive.
+            //       Up until net7.0 TFM, .NET regex library only supported running matches on
+            //       string inputs: https://devblogs.microsoft.com/dotnet/regular-expression-improvements-in-dotnet-7/#spans.
+            //
+            //       We should switch this project to net7.0 to take advantage of Span<char> support
+            //       once the VSIX project is updated to allow builds without mismatched-TFM errors.
+            //
+            //       NOTE: this is not a panacea, we will still end up having to do a memory copy at
+            //             least... Span<T> can only operate on contiguous spans of memory, which
+            //             SnapshotBase may not be.
+            var match = matchRule.Regex.Match(textSnapshot.ToStringCached(), localI, textSnapshot.Length - localI);
+
+            if (!match.Success)
+            {
+                return null;
+            }
+
+            localI += match.Length;
+
+            var length = localI - startPosition;
 
             i = localI;
 

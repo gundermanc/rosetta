@@ -299,6 +299,10 @@
             {
                 return SemanticTokenTypes.AllTypes.ToList().IndexOf(SemanticTokenTypes.Type);
             }
+            else if (ruleName.Contains("FUNCTION"))
+            {
+                return SemanticTokenTypes.AllTypes.ToList().IndexOf(SemanticTokenTypes.Function);
+            }
             else
             {
                 return -1;

@@ -136,7 +136,7 @@
         [JsonRpcMethod(Methods.TextDocumentSemanticTokensRangeName, UseSingleObjectParameterDeserialization = true)]
         public async Task<SemanticTokens> SemanticTokensRangeAsync(SemanticTokensRangeParams arg)
         {
-            var grammar = await GrammarParser.ParseGrammarAsync(@"C:\Repos\rosetta\src\Rosetta.Analysis.Tests\Grammars\Arithmetic.rosetta.md");
+            var grammar = await GrammarParser.ParseGrammarAsync(@"D:\Repos\rosetta\samples\CSharp.rosetta.md");
 
             TextSnapshot? snapshot;
 
@@ -217,7 +217,15 @@
             }
             else if (ruleName.Contains("OPERATOR"))
             {
+                return SemanticTokenTypes.AllTypes.ToList().IndexOf(SemanticTokenTypes.Operator);
+            }
+            else if (ruleName.Contains("KEYWORD"))
+            {
                 return SemanticTokenTypes.AllTypes.ToList().IndexOf(SemanticTokenTypes.Keyword);
+            }
+            else if (ruleName.Contains("TYPE"))
+            {
+                return SemanticTokenTypes.AllTypes.ToList().IndexOf(SemanticTokenTypes.Type);
             }
             else
             {

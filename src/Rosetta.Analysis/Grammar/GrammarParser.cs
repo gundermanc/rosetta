@@ -43,7 +43,7 @@
             return new Grammar(rootRule ?? new AndRule(), ruleDictionary);
         }
 
-        private static Rule ParseRule(string line, Dictionary<string, Rule> ruleDictionary)
+        private static Rule ParseRule(string line, Dictionary<string, Rule> rules)
         {
             // TODO: this could be improved to use on the fly tokenization off a stream
             // instead of string allocations.
@@ -85,7 +85,7 @@
                     isOrRule = true;
                     i++;
                 }
-                else if (TryParseReferenceChild(tokens, ref i, out var referenceRule))
+                else if (TryParseReferenceChild(rules, tokens, ref i, out var referenceRule))
                 {
                     children.Add(referenceRule!);
                 }
@@ -98,7 +98,7 @@
             if (children.Count > 1)
             {
                 ParentRule rule = isOrRule ? new OrRule() : new AndRule();
-                RegisterRule(ruleDictionary, productionName, rule);
+                RegisterRule(rules, productionName, rule);
 
                 // TODO: without list copy.
                 rule.Children.AddRange(children);
@@ -107,7 +107,7 @@
             }
             else
             {
-                RegisterRule(ruleDictionary, productionName, children[0]);
+                RegisterRule(rules, productionName, children[0]);
                 return children[0];
             }
         }
@@ -150,6 +150,7 @@
         }
 
         private static bool TryParseReferenceChild(
+            IReadOnlyDictionary<string, Rule> rules,
             IReadOnlyList<string> tokens,
             ref int i,
             out Rule? rule)
@@ -159,7 +160,7 @@
                 throw new InvalidDataException("Expected reference name");
             }
 
-            rule = new ReferenceRule(tokens[i]);
+            rule = new ReferenceRule(tokens[i], rules);
 
             IncrementOrThrow(tokens, ref i);
 

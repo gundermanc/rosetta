@@ -1,6 +1,7 @@
 ﻿namespace Rosetta.Analysis.Grammar
 {
     using System.Collections.Generic;
+    using System.IO;
 
     public abstract class Rule
     {
@@ -25,13 +26,29 @@
 
     public sealed class ReferenceRule : Rule
     {
-        public ReferenceRule(string ruleName)
+        private readonly IReadOnlyDictionary<string, Rule> rules;
+
+        public ReferenceRule(string ruleName, IReadOnlyDictionary<string, Rule> rules)
             : base(RuleType.ReferenceRule)
         {
-            RuleName = ruleName;
+            this.RuleName = ruleName;
+            this.rules = rules;
         }
 
         public string RuleName { get; }
+
+        public Rule ConcreteRule
+        {
+            get
+            {
+                if (!this.rules.TryGetValue(this.RuleName, out var concreteRule))
+                {
+                    throw new InvalidDataException("Cannot resolve rule reference");
+                }
+
+                return concreteRule;
+            }
+        }
     }
 
     public class ParentRule : Rule

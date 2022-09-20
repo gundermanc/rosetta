@@ -43,7 +43,7 @@
             return new Grammar(rootRule ?? new AndRule(), ruleDictionary);
         }
 
-        private static Rule ParseRule(string line, Dictionary<string, Rule> rules)
+        private static Rule? ParseRule(string line, Dictionary<string, Rule> rules)
         {
             // TODO: this could be improved to use on the fly tokenization off a stream
             // instead of string allocations.
@@ -51,6 +51,12 @@
 
             var children = new List<Rule>();
             bool isOrRule = false;
+
+            // Check for blank lines.
+            if (tokens.Count == 0)
+            {
+                return null;
+            }
 
             // Read in the production name.
             int i = 0;

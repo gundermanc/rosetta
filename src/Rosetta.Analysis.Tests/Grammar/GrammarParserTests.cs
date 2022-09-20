@@ -60,5 +60,19 @@
 
             Assert.Equal("I understood that reference", ((MatchRule)grammar.Rules["REFERENCED_EXPRESSION"]).MatchText);
         }
+
+        [Fact]
+        public async Task Grammar_BlankLines_ParsedCorrectlyAsync()
+        {
+            var grammar = await GrammarParser.ParseGrammarAsync(@"Grammars\BlankLine.rosetta.md");
+
+            Assert.Equal("REFERENCED_EXPRESSION", ((ReferenceRule)grammar.Root).RuleName);
+
+            Assert.Equal(2, grammar.Rules.Count);
+            Assert.Contains("ROOT", grammar.Rules.Keys);
+            Assert.Contains("REFERENCED_EXPRESSION", grammar.Rules.Keys);
+
+            Assert.Equal("I understood that reference", ((MatchRule)grammar.Rules["REFERENCED_EXPRESSION"]).MatchText);
+        }
     }
 }

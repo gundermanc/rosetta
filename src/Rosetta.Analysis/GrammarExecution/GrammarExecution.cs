@@ -88,7 +88,7 @@
                 throw new InvalidOperationException("Inconsistent rule type");
             }
 
-            int startPosition = 0;
+            int startPosition = i;
 
             // Loop until we find a node that matches.
             foreach (var childRule in orRule.Children)

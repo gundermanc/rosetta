@@ -18,6 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Rosetta.Analysis\Rosetta.Analysis.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Looks like the PackageReference doesn't reference the DLL. -->
     <Reference Include="$(NugetPackageRoot)\Microsoft.VisualStudio.Text.Core.Implementation\17.3.206\lib\netstandard2.0\Microsoft.VisualStudio.Text.Core.Implementation.dll" />
   </ItemGroup>

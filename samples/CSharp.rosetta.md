@@ -27,7 +27,9 @@ USING = USING_KEYWORD NAMESPACE_KEYWORD NAMESPACE_EXPRESSION SEMICOLON_OPERATOR
 Defines syntax for classes.
 
 ```rosetta
-CLASS_DECLARATION = CLASS_KEYWORD TYPENAME_EXPRESSION LCURLY_OPERATOR RCURLY_OPERATOR
+CLASS_DECLARATION = ACCESS_MODIFIER SEALED_MODIFIER CLASS_KEYWORD TYPENAME_EXPRESSION LCURLY_OPERATOR RCURLY_OPERATOR
+ACCESS_MODIFIER = PUBLIC_KEYWORD | PRIVATE_KEYWORD | PROTECTED_KEYWORD | INTERNAL_KEYWORD | ''
+SEALED_MODIFIER = SEALED_KEYWORD | ''
 ```
 
 # Expressions
@@ -48,6 +50,11 @@ IDENTIFIER_EXPRESSION = '^([a-z]|[A-Z])([a-z]|[A-Z]|[0-9])*'
 USING_KEYWORD = 'using'
 NAMESPACE_KEYWORD = 'namespace'
 CLASS_KEYWORD = 'class'
+PUBLIC_KEYWORD = 'public'
+PRIVATE_KEYWORD = 'private'
+PROTECTED_KEYWORD = 'protected'
+INTERNAL_KEYWORD = 'internal'
+SEALED_KEYWORD = 'sealed'
 ```
 
 
@@ -70,18 +77,19 @@ This grammar can successfully parse and colorize the following file.
 using namespace System;
 using namespace System.Text;
 
-class Foo
+public class Foo
 {
 
 }
 
-class Bar
+private sealed class Bar
 {
 
 }
 
-class Baz
+protected class Baz
 {
 
 }
+
 ```

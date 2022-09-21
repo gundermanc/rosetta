@@ -9,6 +9,7 @@
     using Microsoft.VisualStudio.LanguageServer.Protocol;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Utilities;
+    using Newtonsoft.Json.Linq;
     using Rosetta.Analysis.GrammarExecution;
     using Rosetta.Analysis.Text;
     using StreamJsonRpc;
@@ -56,6 +57,7 @@
                         OpenClose = true,
                         Change = TextDocumentSyncKind.Incremental,
                     },
+                    FoldingRangeProvider = true,
                     SemanticTokensOptions = new SemanticTokensOptions()
                     {
                         Range = true,
@@ -133,8 +135,30 @@
             DebugPrintDocument(newSnapshot);
         }
 
+        [JsonRpcMethod(Methods.TextDocumentFoldingRangeName, UseSingleObjectParameterDeserialization = true)]
+        public async Task<FoldingRange[]> GetFoldingRangesAsync(FoldingRangeParams arg)
+        {
+            (SyntaxTree? parse, TextSnapshot? snapshot) = await this.GetActiveDocumentParseAsync(arg.TextDocument.Uri);
+
+            var builder = ArrayBuilder<FoldingRange>.GetInstance();
+
+            if (parse is not null &&
+                snapshot is not null)
+            {
+                var previousText = new SnapshotSegment(parse.Root.Text.Snapshot, 0, 0);
+
+                this.VisitFoldingRangeNode(
+                    parse.Root,
+                    builder,
+                    (TextSnapshot)parse.Root.Text.Snapshot,
+                    ref previousText);
+            }
+
+            return builder.ToArrayAndFree();
+        }
+
         [JsonRpcMethod(Methods.TextDocumentSemanticTokensRangeName, UseSingleObjectParameterDeserialization = true)]
-        public async Task<SemanticTokens> SemanticTokensRangeAsync(SemanticTokensRangeParams arg)
+        public async Task<SemanticTokens> GetSemanticTokensForRangeAsync(SemanticTokensRangeParams arg)
         {
             (SyntaxTree? parse, TextSnapshot? snapshot) = await this.GetActiveDocumentParseAsync(arg.TextDocument.Uri);
 
@@ -159,7 +183,7 @@
         }
 
         [JsonRpcMethod(Methods.WorkspaceSymbolName, UseSingleObjectParameterDeserialization = true)]
-        public async Task<SymbolInformation[]> WorkspaceSymbolAsync(WorkspaceSymbolParams arg)
+        public async Task<SymbolInformation[]> GetWorkspaceSymbolsAsync(WorkspaceSymbolParams arg)
         {
             var responseBuilder = ArrayBuilder<SymbolInformation>.GetInstance();
 
@@ -191,6 +215,35 @@
             }
 
             return responseBuilder.ToArrayAndFree();
+        }
+
+        private void VisitFoldingRangeNode(
+            SyntaxNode syntaxNode,
+            ArrayBuilder<FoldingRange> responseBuilder,
+            TextSnapshot snapshot,
+            ref SnapshotSegment previousText)
+        {
+            // Find all type definition names that match the search query and return them.
+            if (syntaxNode.RuleName.Contains("BLOCK"))
+            {
+                var startLine = snapshot.Snapshot.GetLineFromPosition(syntaxNode.Text.Start);
+                var endLine = snapshot.Snapshot.GetLineFromPosition(syntaxNode.Text.End);
+
+                responseBuilder.Add(new FoldingRange()
+                {
+                    StartLine = startLine.LineNumber,
+                    EndLine = endLine.LineNumber,
+                });
+            }
+
+            foreach (var node in syntaxNode.Children)
+            {
+                VisitFoldingRangeNode(
+                    node,
+                    responseBuilder,
+                    snapshot,
+                    ref previousText);
+            }
         }
 
         private void VisitSymbolSearchNode(

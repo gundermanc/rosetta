@@ -15,7 +15,7 @@
 
         [Export]
         [Name(Name)]
-        [BaseDefinition(CodeRemoteContentDefinition.CodeRemoteContentTypeName)]
+        [BaseDefinition(CodeRemoteContentDefinition.CodeRemoteBaseTypeName)]
         internal static ContentTypeDefinition FooContentTypeDefinition;
 
 
